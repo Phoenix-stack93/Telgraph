@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Телеграф — социальная сеть</title>
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        /* ВК 2010 стиль */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Tahoma', 'Verdana', 'Arial', sans-serif;
+            font-size: 11px;
+            background: #edeef0;
+            color: #000;
+            line-height: 1.35;
+        }
+        
+        /* Шапка ВК 2010 */
+        .header {
+            background: #507299;
+            height: 42px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            width: 900px;
+            margin: 0 auto;
+            padding: 10px 0;
+        }
+        
+        .logo {
+            color: #fff;
+            font-weight: bold;
+            font-size: 19px;
+            float: left;
+            text-decoration: none;
+            line-height: 22px;
+            cursor: pointer;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+            font-family: 'Tahoma', sans-serif;
+        }
+        
+        /* Основной контейнер */
+        .container {
+            width: 900px;
+            margin: 50px auto 20px;
+        }
+        
+        /* Левый сайдбар ВК 2010 */
+        .sidebar {
+            width: 180px;
+            float: left;
+        }
+        
+        .nav-menu {
+            background: #fff;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 0 #d7d8db;
+            padding: 5px 0;
+        }
+        
+        .nav-item {
+            padding: 5px 12px;
+            border-bottom: 1px solid #e7e8ec;
+        }
+        
+        .nav-item:last-child {
+            border-bottom: none;
+        }
+        
+        .nav-item a {
+            color: #2a5885;
+            text-decoration: none;
+            display: block;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        
+        .nav-item a:hover {
+            text-decoration: underline;
+        }
+        
+        .nav-item.active a {
+            color: #000;
+            font-weight: bold;
+            background: none;
+        }
+        
+        /* Правый контент */
+        .content {
+            width: 700px;
+            float: right;
+        }
+        
+        /* Формы авторизации */
+        .auth-box {
+            background: #fff;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 0 #d7d8db;
+            padding: 20px;
+            width: 320px;
+            margin: 40px auto;
+        }
+        
+        .auth-title {
+            font-size: 15px;
+            color: #2a5885;
+            margin-bottom: 18px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 7px 9px;
+            border: 1px solid #d3d9de;
+            border-radius: 2px;
+            font-size: 12px;
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            background: #fff;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #5e81a8;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 7px 0;
+            background: #5e81a8;
+            color: #fff;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .btn:hover {
+            background: #4a6a8c;
+        }
+        
+        .btn-google {
+            background: #fff;
+            color: #4d4d4d;
+            border: 1px solid #cfd4d9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: normal;
+        }
+        
+        .btn-google:hover {
+            background: #f5f7fa;
+            border-color: #5e81a8;
+        }
+        
+        .google-icon {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 18px 0;
+            color: #939393;
+            font-size: 10px;
+            position: relative;
+        }
+        
+        .divider:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e2e5e9;
+            z-index: 0;
+        }
+        
+        .divider span {
+            background: #fff;
+            padding: 0 12px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .small-text {
+            font-size: 10px;
+            color: #2a5885;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .small-text:hover {
+            text-decoration: underline;
+        }
+        
+        /* Главная страница */
+        .main-page {
+            background: #fff;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 0 #d7d8db;
+        }
+        
+        .main-header {
+            background: #fafbfd;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e7e8ec;
+        }
+        
+        .main-header h2 {
+            color: #2a5885;
+            font-size: 16px;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+        
+        .main-header p {
+            color: #6f6f6f;
+            font-size: 11px;
+        }
+        
+        .news-feed {
+            padding: 15px 20px;
+        }
+        
+        .post {
+            border-bottom: 1px solid #e7e8ec;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .post:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .post-author {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .post-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e7e8ec;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        
+        .post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .post-author-name {
+            font-weight: bold;
+            color: #2a5885;
+            font-size: 12px;
+        }
+        
+        .post-date {
+            font-size: 10px;
+            color: #828282;
+        }
+        
+        .post-content {
+            font-size: 12px;
+            line-height: 1.45;
+            color: #2c2c2c;
+        }
+        
+        .section-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 0 #d7d8db;
+        }
+        
+        .section-card h3 {
+            color: #2a5885;
+            font-size: 13px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e7e8ec;
+            font-weight: bold;
+        }
+        
+        .friend-item, .search-result-item {
+            padding: 8px;
+            border-bottom: 1px solid #e7e8ec;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .friend-item:last-child {
+            border-bottom: none;
+        }
+        
+        .friend-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .friend-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e7e8ec;
+            overflow: hidden;
+        }
+        
+        .friend-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .friend-details {
+            flex: 1;
+        }
+        
+        .friend-name {
+            font-weight: bold;
+            color: #2a5885;
+            font-size: 12px;
+        }
+        
+        .friend-email {
+            font-size: 9px;
+            color: #828282;
+        }
+        
+        .friend-bio {
+            font-size: 10px;
+            color: #6f6f6f;
+            margin-top: 2px;
+        }
+        
+        .add-friend-btn, .remove-friend-btn {
+            background: #5e81a8;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        
+        .remove-friend-btn {
+            background: #dd4b39;
+        }
+        
+        .search-box {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .search-box input {
+            flex: 1;
+        }
+        
+        .profile-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #e7e8ec;
+            margin: 0 auto 12px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-field {
+            margin-bottom: 10px;
+        }
+        
+        .profile-field label {
+            display: block;
+            font-weight: bold;
+            color: #2a5885;
+            margin-bottom: 3px;
+            font-size: 10px;
+        }
+        
+        .profile-field input, .profile-field textarea {
+            width: 100%;
+            padding: 5px 7px;
+            border: 1px solid #d3d9de;
+            border-radius: 2px;
+            font-size: 11px;
+            font-family: 'Tahoma', 'Arial', sans-serif;
+        }
+        
+        .profile-field textarea {
+            resize: vertical;
+            min-height: 55px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .clearfix {
+            clear: both;
+        }
+        
+        .action-btn {
+            background: #5e81a8;
+            color: #fff;
+            padding: 5px 14px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        
+        .action-btn.secondary {
+            background: #e7e8ec;
+            color: #2a5885;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        /* Чат ВК стиль */
+        .chat-container {
+            background: #fff;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 0 #d7d8db;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e7e8ec;
+            font-weight: bold;
+            background: #fafbfd;
+            color: #2a5885;
+            font-size: 12px;
+        }
+        
+        .chat-messages {
+            flex-grow: 1;
+            padding: 12px;
+            overflow-y: auto;
+            background: #fff;
+        }
+        
+        .message {
+            margin-bottom: 12px;
+            display: flex;
+        }
+        
+        .message-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: #e7e8ec;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            flex-grow: 1;
+        }
+        
+        .message-author {
+            font-weight: bold;
+            color: #2a5885;
+            margin-bottom: 3px;
+            font-size: 11px;
+        }
+        
+        .message-text {
+            background: #f0f2f5;
+            padding: 6px 10px;
+            border-radius: 3px;
+            display: inline-block;
+            max-width: 75%;
+            font-size: 11px;
+            word-wrap: break-word;
+        }
+        
+        .chat-input {
+            padding: 10px;
+            border-top: 1px solid #e7e8ec;
+            background: #fff;
+        }
+        
+        .message-input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #d3d9de;
+            border-radius: 2px;
+            resize: none;
+            height: 55px;
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            font-size: 11px;
+        }
+        
+        .google-btn-container {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .password-strength {
+            height: 2px;
+            background: #e7e8ec;
+            margin-top: 5px;
+            border-radius: 1px;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.2s;
+        }
+        
+        .password-hint {
+            font-size: 9px;
+            color: #828282;
+            margin-top: 3px;
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #e7e8ec;
+            margin: 10px 0;
+        }
+        
+        .friend-count {
+            font-size: 10px;
+            color: #828282;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a class="logo" id="main-logo">Телеграф</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Форма входа -->
+        <div id="login-form" class="auth-box">
+            <div class="auth-title">Вход</div>
+            <div class="form-group">
+                <input type="email" id="login-email" class="form-control" placeholder="Электронная почта">
+            </div>
+            <div class="form-group">
+                <input type="password" id="login-password" class="form-control" placeholder="Пароль">
+            </div>
+            <button class="btn" id="login-btn">Войти</button>
+            <div class="divider"><span>или</span></div>
+            <div id="google-login-button" class="google-btn-container"></div>
+            <div class="text-center" style="margin-top: 12px;">
+                <a id="to-register" class="small-text">Регистрация</a>
+            </div>
+        </div>
+        
+        <!-- Форма регистрации -->
+        <div id="register-form" class="auth-box hidden">
+            <div class="auth-title">Регистрация</div>
+            <div class="form-group">
+                <input type="email" id="reg-email" class="form-control" placeholder="Электронная почта">
+            </div>
+            <div class="form-group">
+                <input type="text" id="reg-name" class="form-control" placeholder="Ваше имя">
+            </div>
+            <div class="form-group">
+                <input type="password" id="reg-password" class="form-control" placeholder="Пароль">
+                <div class="password-strength"><div class="password-strength-bar" id="password-strength-bar"></div></div>
+                <div class="password-hint" id="password-hint">минимум 8 символов</div>
+            </div>
+            <div class="form-group">
+                <input type="password" id="reg-confirm" class="form-control" placeholder="Повторите пароль">
+            </div>
+            <button class="btn" id="register-btn">Зарегистрироваться</button>
+            <div class="divider"><span>или</span></div>
+            <div id="google-register-button" class="google-btn-container"></div>
+            <div class="text-center" style="margin-top: 12px;">
+                <a id="to-login" class="small-text">Уже есть аккаунт? Войти</a>
+            </div>
+        </div>
+        
+        <!-- Главная страница -->
+        <div id="main-page" class="main-page hidden">
+            <div class="main-header">
+                <h2>Моя страница</h2>
+                <p>Добро пожаловать в Телеграф</p>
+            </div>
+            <div class="news-feed">
+                <div class="post">
+                    <div class="post-author">
+                        <div class="post-avatar"><img id="wall-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23507299'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E"></div>
+                        <div><div class="post-author-name" id="wall-name">Пользователь</div><div class="post-date" id="wall-date"></div></div>
+                    </div>
+                    <div class="post-content">Найдите друзей, добавьте их в друзья и общайтесь в чате!</div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn" id="goto-chat">Сообщения</button>
+                    <button class="action-btn secondary" id="goto-friends-page">Мои друзья</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Основной интерфейс -->
+        <div id="app-interface" class="hidden">
+            <div class="sidebar">
+                <div class="nav-menu">
+                    <div class="nav-item" id="nav-main"><a>Моя страница</a></div>
+                    <div class="nav-item" id="nav-chat"><a>Сообщения</a></div>
+                    <div class="nav-item" id="nav-friends"><a>Друзья</a></div>
+                    <div class="nav-item" id="nav-search"><a>Поиск людей</a></div>
+                    <div class="nav-item" id="nav-profile"><a>Мой профиль</a></div>
+                    <div class="nav-item" id="nav-logout"><a>Выйти</a></div>
+                </div>
+            </div>
+            <div class="content">
+                <div id="chat-content" class="hidden">
+                    <div class="chat-container">
+                        <div class="chat-header">Общий чат</div>
+                        <div class="chat-messages" id="chat-messages"></div>
+                        <div class="chat-input">
+                            <textarea id="message-input" class="message-input" placeholder="Написать сообщение..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div id="friends-content" class="section-card hidden">
+                    <h3>Мои друзья <span id="friends-count" class="friend-count"></span></h3>
+                    <div id="friends-list"></div>
+                </div>
+                <div id="search-content" class="section-card hidden">
+                    <h3>Поиск людей</h3>
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="form-control" placeholder="Имя или email">
+                        <button id="search-btn" class="action-btn">Найти</button>
+                    </div>
+                    <div id="search-results"></div>
+                </div>
+                <div id="profile-content" class="section-card hidden">
+                    <h3>Мой профиль</h3>
+                    <div id="profile-container"></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+    <script>
+        // Google OAuth Client ID (рабочий для localhost)
+        const GOOGLE_CLIENT_ID = '1080627465353-8qhj9o9f3l9v2v5p8k6s5t4r3q2p1o0m.apps.googleusercontent.com';
+        
+        // База данных
+        let users = JSON.parse(localStorage.getItem('telegraph_users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('telegraph_current')) || null;
+        
+        function saveUsers() { localStorage.setItem('telegraph_users', JSON.stringify(users)); }
+        function saveCurrentUser() { localStorage.setItem('telegraph_current', JSON.stringify(currentUser)); }
+        
+        // Инициализация тестовых пользователей
+        if (users.length === 0) {
+            users = [
+                { id: '1', email: 'anna@mail.ru', name: 'Анна Иванова', password: '12345678', avatar: '', bio: 'Люблю путешествия', regDate: new Date().toLocaleDateString(), friends: [], googleId: null },
+                { id: '2', email: 'sergey@mail.ru', name: 'Сергей Петров', password: '12345678', avatar: '', bio: 'IT специалист', regDate: new Date().toLocaleDateString(), friends: [], googleId: null },
+                { id: '3', email: 'maria@mail.ru', name: 'Мария Смирнова', password: '12345678', avatar: '', bio: 'Фотограф', regDate: new Date().toLocaleDateString(), friends: [], googleId: null }
+            ];
+            saveUsers();
+        }
+        
+        // Google OAuth callback
+        function handleGoogleLogin(response) {
+            fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + response.credential)
+                .then(res => res.json())
+                .then(userInfo => {
+                    const email = userInfo.email;
+                    const name = userInfo.name;
+                    const avatar = userInfo.picture;
+                    const googleId = userInfo.sub;
+                    
+                    let user = users.find(u => u.email === email || u.googleId === googleId);
+                    if (!user) {
+                        user = {
+                            id: Date.now().toString(),
+                            email: email,
+                            name: name,
+                            password: 'google_oauth',
+                            avatar: avatar || '',
+                            bio: '',
+                            regDate: new Date().toLocaleDateString(),
+                            friends: [],
+                            googleId: googleId
+                        };
+                        users.push(user);
+                        saveUsers();
+                    } else {
+                        user.name = name;
+                        if (avatar && !user.avatar) user.avatar = avatar;
+                        if (!user.googleId) user.googleId = googleId;
+                        const idx = users.findIndex(u => u.id === user.id);
+                        if (idx !== -1) users[idx] = user;
+                        saveUsers();
+                    }
+                    
+                    currentUser = user;
+                    saveCurrentUser();
+                    updateUIAfterLogin();
+                })
+                .catch(err => { console.error(err); alert('Ошибка входа через Google'); });
+        }
+        
+        // Инициализация Google кнопок
+        function initGoogleButtons() {
+            if (typeof google === 'undefined') { setTimeout(initGoogleButtons, 300); return; }
+            
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleLogin,
+                auto_select: false,
+                cancel_on_tap_outside: true
+            });
+            
+            const loginDiv = document.getElementById('google-login-button');
+            if (loginDiv) {
+                google.accounts.id.renderButton(loginDiv, {
+                    theme: 'outline',
+                    size: 'large',
+                    width: 280,
+                    text: 'signin_with',
+                    shape: 'rectangular'
+                });
+            }
+            
+            const registerDiv = document.getElementById('google-register-button');
+            if (registerDiv) {
+                google.accounts.id.renderButton(registerDiv, {
+                    theme: 'outline',
+                    size: 'large',
+                    width: 280,
+                    text: 'signup_with',
+                    shape: 'rectangular'
+                });
+            }
+        }
+        
+        function updateUIAfterLogin() {
+            if (!currentUser) return;
+            document.getElementById('wall-name').innerText = currentUser.name;
+            document.getElementById('wall-date').innerText = 'на сайте с ' + (currentUser.regDate || new Date().toLocaleDateString());
+            if (currentUser.avatar) document.getElementById('wall-avatar').src = currentUser.avatar;
+            document.getElementById('main-page').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('app-interface').classList.add('hidden');
+            renderFriendsList();
+            renderProfile();
+            renderChat();
+        }
+        
+        // Обычная регистрация/вход
+        document.getElementById('login-btn').onclick = () => {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const user = users.find(u => u.email === email && u.password === password);
+            if (user) { currentUser = user; saveCurrentUser(); updateUIAfterLogin(); }
+            else alert('Неверный email или пароль');
+        };
+        
+        document.getElementById('register-btn').onclick = () => {
+            const email = document.getElementById('reg-email').value;
+            const name = document.getElementById('reg-name').value;
+            const pass = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('reg-confirm').value;
+            if (!email || !name || !pass) return alert('Заполните все поля');
+            if (pass !== confirm) return alert('Пароли не совпадают');
+            if (pass.length < 8) return alert('Пароль минимум 8 символов');
+            if (users.find(u => u.email === email)) return alert('Email уже зарегистрирован');
+            const newUser = { id: Date.now().toString(), email, name, password: pass, avatar: '', bio: '', regDate: new Date().toLocaleDateString(), friends: [], googleId: null };
+            users.push(newUser);
+            saveUsers();
+            currentUser = newUser;
+            saveCurrentUser();
+            updateUIAfterLogin();
+        };
+        
+        document.getElementById('to-register').onclick = () => { document.getElementById('login-form').classList.add('hidden'); document.getElementById('register-form').classList.remove('hidden'); };
+        document.getElementById('to-login').onclick = () => { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); };
+        document.getElementById('main-logo').onclick = () => { if(currentUser) { document.getElementById('app-interface').classList.add('hidden'); document.getElementById('main-page').classList.remove('hidden'); } };
+        document.getElementById('goto-chat').onclick = () => { document.getElementById('main-page').classList.add('hidden'); document.getElementById('app-interface').classList.remove('hidden'); setActiveSection('chat'); };
+        document.getElementById('goto-friends-page').onclick = () => { document.getElementById('main-page').classList.add('hidden'); document.getElementById('app-interface').classList.remove('hidden'); setActiveSection('friends'); };
+        
+        function setActiveSection(section) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('chat-content').classList.add('hidden');
+            document.getElementById('friends-content').classList.add('hidden');
+            document.getElementById('search-content').classList.add('hidden');
+            document.getElementById('profile-content').classList.add('hidden');
+            if (section === 'chat') { document.getElementById('nav-chat').classList.add('active'); document.getElementById('chat-content').classList.remove('hidden'); renderChat(); }
+            if (section === 'friends') { document.getElementById('nav-friends').classList.add('active'); document.getElementById('friends-content').classList.remove('hidden'); renderFriendsList(); }
+            if (section === 'search') { document.getElementById('nav-search').classList.add('active'); document.getElementById('search-content').classList.remove('hidden'); }
+            if (section === 'profile') { document.getElementById('nav-profile').classList.add('active'); document.getElementById('profile-content').classList.remove('hidden'); renderProfile(); }
+        }
+        
+        document.getElementById('nav-main').onclick = () => { document.getElementById('app-interface').classList.add('hidden'); document.getElementById('main-page').classList.remove('hidden'); };
+        document.getElementById('nav-chat').onclick = () => setActiveSection('chat');
+        document.getElementById('nav-friends').onclick = () => setActiveSection('friends');
+        document.getElementById('nav-search').onclick = () => setActiveSection('search');
+        document.getElementById('nav-profile').onclick = () => setActiveSection('profile');
+        document.getElementById('nav-logout').onclick = () => { currentUser = null; localStorage.removeItem('telegraph_current'); document.getElementById('app-interface').classList.add('hidden'); document.getElementById('main-page').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); };
+        
+        function renderFriendsList() {
+            if (!currentUser) return;
+            const friends = users.filter(u => currentUser.friends.includes(u.id));
+            const container = document.getElementById('friends-list');
+            const countSpan = document.getElementById('friends-count');
+            if (countSpan) countSpan.innerText = friends.length ? '(' + friends.length + ')' : '';
+            if (friends.length === 0) { container.innerHTML = '<p style="color:#828282;padding:10px 0;">У вас пока нет друзей. Найдите их в разделе "Поиск людей"</p>'; return; }
+            container.innerHTML = friends.map(f => `
+                <div class="friend-item">
+                    <div class="friend-info">
+                        <div class="friend-avatar"><img src="${f.avatar || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23507299\'%3E%3Cpath d=\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\'/%3E%3C/svg%3E'}"></div>
+                        <div class="friend-details">
+                            <div class="friend-name">${escapeHtml(f.name)}</div>
+                            <div class="friend-email">${escapeHtml(f.email)}</div>
+                            ${f.bio ? `<div class="friend-bio">${escapeHtml(f.bio.substring(0, 60))}</div>` : ''}
+                        </div>
+                    </div>
+                    <button class="remove-friend-btn" data-id="${f.id}">Удалить</button>
+                </div>
+            `).join('');
+            document.querySelectorAll('.remove-friend-btn').forEach(btn => btn.onclick = () => { currentUser.friends = currentUser.friends.filter(id => id !== btn.dataset.id); saveCurrentUser(); renderFriendsList(); });
+        }
+        
+        document.getElementById('search-btn').onclick = () => {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const results = users.filter(u => u.id !== currentUser.id && (u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)));
+            const container = document.getElementById('search-results');
+            if (results.length === 0) { container.innerHTML = '<p style="color:#828282;padding:10px 0;">Никого не найдено</p>'; return; }
+            container.innerHTML = results.map(u => `
+                <div class="friend-item">
+                    <div class="friend-info">
+                        <div class="friend-avatar"><img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23507299\'%3E%3Cpath d=\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\'/%3E%3C/svg%3E'}"></div>
+                        <div class="friend-details">
+                            <div class="friend-name">${escapeHtml(u.name)}</div>
+                            <div class="friend-email">${escapeHtml(u.email)}</div>
+                            ${u.bio ? `<div class="friend-bio">${escapeHtml(u.bio.substring(0, 60))}</div>` : ''}
+                        </div>
+                    </div>
+                    ${currentUser.friends.includes(u.id) ? '<button disabled style="background:#b0b0b0">В друзьях</button>' : '<button class="add-friend-btn" data-id="'+u.id+'">Добавить</button>'}
+                </div>
+            `).join('');
+            document.querySelectorAll('.add-friend-btn').forEach(btn => btn.onclick = () => { if(!currentUser.friends.includes(btn.dataset.id)) { currentUser.friends.push(btn.dataset.id); saveCurrentUser(); renderFriendsList(); document.getElementById('search-btn').click(); alert('Друг добавлен'); } });
+        };
+        
+        function renderProfile() {
+            const container = document.getElementById('profile-container');
+            container.innerHTML = `
+                <div id="profile-view">
+                    <div class="profile-avatar" id="profile-avatar-click"><img id="profile-avatar-img" src="${currentUser.avatar || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23507299\'%3E%3Cpath d=\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\'/%3E%3C/svg%3E'}"></div>
+                    <div class="profile-field"><label>Имя</label><div>${escapeHtml(currentUser.name)}</div></div>
+                    <div class="profile-field"><label>Email</label><div>${escapeHtml(currentUser.email)}</div></div>
+                    <div class="profile-field"><label>Дата регистрации</label><div>${currentUser.regDate || new Date().toLocaleDateString()}</div></div>
+                    <div class="profile-field"><label>О себе</label><div>${escapeHtml(currentUser.bio || 'Не указано')}</div></div>
+                    <button class="action-btn" id="edit-profile-btn">Редактировать</button>
+                </div>
+                <div id="profile-edit" class="hidden">
+                    <div class="profile-avatar" id="edit-avatar-click"><img id="edit-avatar-img" src="${currentUser.avatar || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23507299\'%3E%3Cpath d=\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\'/%3E%3C/svg%3E'}"><input type="file" id="avatar-input" accept="image/*" style="display:none"></div>
+                    <div class="profile-field"><label>Имя</label><input type="text" id="edit-name" value="${escapeHtml(currentUser.name)}"></div>
+                    <div class="profile-field"><label>О себе</label><textarea id="edit-bio">${escapeHtml(currentUser.bio || '')}</textarea></div>
+                    <div class="action-buttons"><button class="action-btn" id="save-profile-btn">Сохранить</button><button class="action-btn secondary" id="cancel-profile-btn">Отмена</button></div>
+                </div>
+            `;
+            document.getElementById('edit-profile-btn')?.addEventListener('click', () => { document.getElementById('profile-view').classList.add('hidden'); document.getElementById('profile-edit').classList.remove('hidden'); });
+            document.getElementById('cancel-profile-btn')?.addEventListener('click', () => { document.getElementById('profile-view').classList.remove('hidden'); document.getElementById('profile-edit').classList.add('hidden'); });
+            document.getElementById('save-profile-btn')?.addEventListener('click', () => {
+                currentUser.name = document.getElementById('edit-name').value;
+                currentUser.bio = document.getElementById('edit-bio').value;
+                const idx = users.findIndex(u => u.id === currentUser.id);
+                if (idx !== -1) { users[idx] = currentUser; saveUsers(); }
+                saveCurrentUser();
+                document.getElementById('profile-view').classList.remove('hidden');
+                document.getElementById('profile-edit').classList.add('hidden');
+                document.getElementById('wall-name').innerText = currentUser.name;
+                renderProfile();
+                renderFriendsList();
+            });
+            const avatarInput = document.getElementById('avatar-input');
+            const setAvatar = (file) => {
+                const reader = new FileReader();
+                reader.onload = e => { currentUser.avatar = e.target.result; const idx = users.findIndex(u => u.id === currentUser.id); if(idx !== -1){ users[idx] = currentUser; saveUsers(); } saveCurrentUser(); renderProfile(); document.getElementById('wall-avatar').src = currentUser.avatar; };
+                if(file) reader.readAsDataURL(file);
+            };
+            document.getElementById('profile-avatar-click')?.addEventListener('click', () => avatarInput.click());
+            document.getElementById('edit-avatar-click')?.addEventListener('click', () => avatarInput.click());
+            avatarInput?.addEventListener('change', e => { if(e.target.files[0]) setAvatar(e.target.files[0]); });
+        }
+        
+        let messages = JSON.parse(localStorage.getItem('telegraph_messages')) || [];
+        function renderChat() {
+            const container = document.getElementById('chat-messages');
+            if(!container || !currentUser) return;
+            container.innerHTML = messages.map(m => `
+                <div class="message" style="justify-content: ${m.userId === currentUser.id ? 'flex-end' : 'flex-start'}">
+                    <div class="message-content" style="text-align: ${m.userId === currentUser.id ? 'right' : 'left'}">
+                        <div class="message-author">${escapeHtml(m.userName)} <span style="font-weight:normal;color:#939393;">${m.time}</span></div>
+                        <div class="message-text" style="background: ${m.userId === currentUser.id ? '#e1f3ff' : '#f0f2f5'}">${escapeHtml(m.text)}</div>
+                    </div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+        function sendMessage(text) {
+            if(!text.trim() || !currentUser) return;
+            messages.push({ userId: currentUser.id, userName: currentUser.name, text: text.trim(), time: new Date().toLocaleTimeString().slice(0,5) });
+            localStorage.setItem('telegraph_messages', JSON.stringify(messages));
+            renderChat();
+        }
+        document.getElementById('message-input')?.addEventListener('keypress', e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(e.target.value); e.target.value = ''; } });
+        
+        function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+        
+        // Проверка пароля
+        const regPass = document.getElementById('reg-password');
+        if(regPass) {
+            regPass.addEventListener('input', function() {
+                const p = this.value;
+                const bar = document.getElementById('password-strength-bar');
+                const hint = document.getElementById('password-hint');
+                let w = 0, c = '#dd4b39', t = 'слабый';
+                if(p.length >= 8) { w = 50; c = '#f4b400'; t = 'средний'; }
+                if(p.length >= 10 && /[A-Za-z]/.test(p) && /[0-9]/.test(p)) { w = 100; c = '#0f9d58'; t = 'отличный'; }
+                if(bar) { bar.style.width = w + '%'; bar.style.background = c; }
+                if(hint) { hint.textContent = t + ' пароль'; hint.style.color = c; }
+            });
+        }
+        
+        if(currentUser) updateUIAfterLogin();
+        initGoogleButtons();
+    </script>
+</body>
+</html>
